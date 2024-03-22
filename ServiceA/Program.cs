@@ -1,7 +1,7 @@
+using ServiceA.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -16,38 +16,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/current", async () =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var httpClient = new HttpClient();
+    httpClient.BaseAddress = new Uri("https://min-api.cryptocompare.com");
+    var serviceResponse = await httpClient.GetAsync("/data/price?fsym=BTC&tsyms=USD");
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+    var responseContent = await serviceResponse.Content.ReadAsStringAsync();
+    if (!serviceResponse.IsSuccessStatusCode)
+    {
+        throw new ApplicationException($"{serviceResponse.StatusCode}: {responseContent}");
+    }
 
-app.MapGet("/current", () =>
-{
-    var currentValue = 45.7;
-    
-    return currentValue;
+    var bitcoin = System.Text.Json.JsonSerializer.Deserialize<Bitcoin>(responseContent);
+
+    return $"Current value is {bitcoin?.USD} USD.";
 })
-.WithName("GetCurrentBitcointValue")
+.WithName("GetCurrentBitcoinValue")
 .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
