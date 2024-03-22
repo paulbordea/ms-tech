@@ -20,12 +20,12 @@ A simple nginx deployment that returns a 200 OK on every GET request.
 [Docker images Service A](https://hub.docker.com/r/paulbordea/servicea)
 
 # Kubernetes
+[Terraform](https://github.com/paulbordea/ms-tech/tree/main/terraform)
 [Manifests](https://github.com/paulbordea/ms-tech/tree/main/k8s)
 
 Required:
 * 2 deployments
 * 2 services
 * 2 ingress
-
 
 # Using the application
