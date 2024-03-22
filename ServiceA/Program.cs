@@ -36,6 +36,15 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+app.MapGet("/current", () =>
+{
+    var currentValue = 45.7;
+    
+    return currentValue;
+})
+.WithName("GetCurrentBitcointValue")
+.WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

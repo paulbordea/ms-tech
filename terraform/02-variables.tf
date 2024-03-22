@@ -33,6 +33,6 @@ variable "windows_admin_username" {
 # Windows Admin Password for k8s worker nodes
 variable "windows_admin_password" {
   type = string
-  default = "mypassword@123"  # Updated June 2023
+  default = "xxx"  # Can be set up inside a local terraform.tfvars file
   description = "This variable defines the Windows admin password k8s Worker nodes"  
 }
