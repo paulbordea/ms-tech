@@ -30,7 +30,7 @@ app.MapGet("/current", async () =>
 
     var bitcoin = System.Text.Json.JsonSerializer.Deserialize<Bitcoin>(responseContent);
 
-    return $"Current value is {bitcoin?.USD} USD.";
+    return bitcoin?.USD;
 })
 .WithName("GetCurrentBitcoinValue")
 .WithOpenApi();

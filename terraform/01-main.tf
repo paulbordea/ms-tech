@@ -17,7 +17,7 @@ terraform {
     storage_account_name  = "mstechterraformstate"
     container_name        = "tfstatefiles"
     key                   = "terraform.tfstate"
-    subscription_id       = "xxxxxxxxxxxx"
+    subscription_id       = "a2e45cbf-8f10-481e-b310-2a2f89982d63"
   }  
 }
 

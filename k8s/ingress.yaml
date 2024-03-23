@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingess.kubernetes.io/rewrite-target: /
+  name: ms-tech-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: ms-tech.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: servicea
+            port:
+              number: 80
+        path: /servicea
+        pathType: Prefix
+      - backend:
+          service:
+            name: serviceb
+            port:
+              number: 80
+        path: /serviceb
+        pathType: Prefix
