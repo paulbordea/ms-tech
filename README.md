@@ -8,7 +8,7 @@
 
 [GitHub repo](https://github.com/paulbordea/ms-tech/tree/main/ServiceA)
 
-A C# WebAPI application with 2 endpoints: 
+A C# WebAPI application with 2 endpoints:
 
 * /current
 * /average
@@ -48,7 +48,9 @@ There are 2 endpoints available: _/current_ and _/average_.
 This has no code, it simple contains inside the **ServiceB** folder a Dockerfile that inherits the _nginx_ image and copies the static index.html page which will be served for each GET request.
 The resulting image is pushed to the _paulbordea/serviceb_ repository.
 
-### AKS
+### Kubernetes resources
 
 The manifests for both services and the ingress resource are under the **k8s** folder.
 The ingress declares a host and 2 backends thus making the 2 services available under ms-tech.com/servicea and ms-tech.com/serviceb.
+
+There is also a Network policy for each service to restrict ingress traffic.
