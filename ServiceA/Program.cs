@@ -1,9 +1,14 @@
-using ServiceA.Models;
+using ServiceA.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddHostedService<TimedHostedService>();
+builder.Services.AddScoped<IBitcoinService, BitcoinService>();
+builder.Services.AddSingleton<IMemoryCacheService<double>, MemoryCacheService>();
 
 var app = builder.Build();
 
@@ -17,22 +22,24 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGet("/current", async () =>
-{
-    var httpClient = new HttpClient();
-    httpClient.BaseAddress = new Uri("https://min-api.cryptocompare.com");
-    var serviceResponse = await httpClient.GetAsync("/data/price?fsym=BTC&tsyms=USD");
-
-    var responseContent = await serviceResponse.Content.ReadAsStringAsync();
-    if (!serviceResponse.IsSuccessStatusCode)
     {
-        throw new ApplicationException($"{serviceResponse.StatusCode}: {responseContent}");
-    }
-
-    var bitcoin = System.Text.Json.JsonSerializer.Deserialize<Bitcoin>(responseContent);
-
-    return bitcoin?.USD;
-})
+        using var serviceScope = app.Services.CreateScope();
+        var services = serviceScope.ServiceProvider;
+        var bitcoinService = services.GetRequiredService<IBitcoinService>();
+        return await bitcoinService.GetBitcoinValue().ConfigureAwait(false);
+    })
 .WithName("GetCurrentBitcoinValue")
 .WithOpenApi();
+
+app.MapGet("/average", () =>
+    {
+        using var serviceScope = app.Services.CreateScope();
+        var services = serviceScope.ServiceProvider;
+        var memoryCacheService = services.GetRequiredService<IMemoryCacheService<double>>();
+        
+        return memoryCacheService.Get("average").ToString("##.##");
+    })
+    .WithName("GetCurrentAverageValue")
+    .WithOpenApi();
 
 app.Run();
